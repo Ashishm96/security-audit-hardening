@@ -1,7 +1,3 @@
-Here’s a detailed `README.md` for showcasing your security audit and server hardening project. This file includes commands, details, and information on how to use and configure the project.
-
----
-
 # Security Audit and Server Hardening
 
 Welcome to the Security Audit and Server Hardening project! This repository contains Bash scripts designed to automate security audits and server hardening processes on Linux servers. The scripts are modular, reusable, and easily deployable across multiple servers to ensure compliance with stringent security standards.
