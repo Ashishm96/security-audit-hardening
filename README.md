@@ -1,182 +1,212 @@
+Here’s a detailed `README.md` for showcasing your security audit and server hardening project. This file includes commands, details, and information on how to use and configure the project.
+
+---
+
 # Security Audit and Server Hardening
 
-This project provides a modular and reusable Bash script for automating the security audit and hardening process on Linux servers. The script is designed to be easily deployable across multiple servers, ensuring they meet stringent security standards.
+Welcome to the Security Audit and Server Hardening project! This repository contains Bash scripts designed to automate security audits and server hardening processes on Linux servers. The scripts are modular, reusable, and easily deployable across multiple servers to ensure compliance with stringent security standards.
 
-## Features
-- User and group audits
-- File and directory permissions checks
-- Service audits
-- Firewall and network security verification
-- IP and network configuration checks
-- Security updates and patching
-- Log monitoring
-- Customizable security checks
-- Server hardening measures
+## Project Structure
 
-## Prerequisites
-- Linux server (tested on Ubuntu 20.04)
-- Bash shell
+The project is organized as follows:
 
-## Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/security-audit-hardening.git
-   cd security-audit-hardening
+```
+security-audit-hardening/
+├── scripts/
+│   ├── security_audit.sh
+│   ├── hardening.sh
+│   ├── custom_checks.sh
+│   └── config.sh
+├── config/
+│   ├── custom_checks.conf
+│   └── firewall_rules.conf
+├── README.md
+└── LICENSE
+```
 
-# Security Audit and Server Hardening on Linux Servers
+### Scripts
 
-## Overview
+- **`security_audit.sh`**: Performs a comprehensive security audit on the server.
+- **`hardening.sh`**: Applies hardening measures to secure the server.
+- **`custom_checks.sh`**: Contains custom security checks that can be extended based on specific organizational needs.
+- **`config.sh`**: Configuration file for setting environment variables and paths.
 
-This project provides a Bash script designed to automate both the security audit and hardening process of Linux servers. The script is modular, reusable, and can be easily deployed across multiple servers to ensure they meet stringent security standards. It includes checks for common security vulnerabilities, IPv4/IPv6 configurations, public vs. private IP identification, and implements hardening measures.
+### Configuration Files
 
-## Features
-
-- **User and Group Audits**
-  - List all users and groups.
-  - Identify users with UID 0 (root privileges) and report any non-standard users.
-  - Report users without passwords or with weak passwords.
-  
-- **File and Directory Permissions**
-  - Scan for files and directories with world-writable permissions.
-  - Ensure `.ssh` directories have secure permissions.
-  - Report files with SUID or SGID bits set, particularly on executables.
-  
-- **Service Audits**
-  - List all running services and identify any unnecessary or unauthorized services.
-  - Ensure critical services (e.g., `sshd`, `iptables`) are running and properly configured.
-  - Check that no services are listening on non-standard or insecure ports.
-  
-- **Firewall and Network Security**
-  - Verify that a firewall (e.g., `iptables`, `ufw`) is active and configured to block unauthorized access.
-  - Report any open ports and their associated services.
-  - Check for IP forwarding or other insecure network configurations.
-  
-- **IP and Network Configuration Checks**
-  - Identify whether the server’s IP addresses are public or private.
-  - Provide a summary of all IP addresses, specifying which are public and which are private.
-  - Ensure sensitive services (e.g., SSH) are not exposed on public IPs unless required.
-  
-- **Security Updates and Patching**
-  - Check for available security updates or patches.
-  - Ensure the server is configured to receive and install security updates regularly.
-  
-- **Log Monitoring**
-  - Check for recent suspicious log entries, such as too many login attempts on SSH.
-  
-- **Server Hardening**
-  - Implement SSH key-based authentication and disable password-based login for root.
-  - Disable IPv6 if not in use.
-  - Secure the GRUB bootloader with a password.
-  - Configure the firewall with recommended rules.
-  - Enable automatic security updates.
-
-- **Custom Security Checks**
-  - Easily extend the script with custom security checks based on specific organizational policies.
-  
-- **Reporting and Alerting**
-  - Generate a summary report of the security audit and hardening process.
-  - Optionally, configure the script to send email alerts or notifications if critical vulnerabilities or misconfigurations are found.
-
-## Prerequisites
-
-- A Linux server (tested on Ubuntu 20.04, should work on most Linux distributions).
-- Bash shell.
-- Access to the server with sudo privileges.
+- **`custom_checks.conf`**: Defines custom security checks.
+- **`firewall_rules.conf`**: Contains rules for firewall configuration.
 
 ## Installation
 
 1. **Clone the Repository**
+
+   First, clone the repository to your local machine or server:
+
    ```bash
-   git clone https://github.com/yourusername/security-audit-hardening.git
+   git clone https://github.com/Ashishm96/security-audit-hardening.git
    cd security-audit-hardening
    ```
 
-2. **Review and Configure**
-   - **Configuration Files:** Customize security checks and hardening rules in the `config/` directory.
-   - **Scripts:** Review the scripts in the `scripts/` directory to ensure they meet your specific requirements.
+2. **Configure Custom Checks**
+
+   Edit the `config/custom_checks.conf` file to include any custom security checks you need. This file can be extended with additional checks as per your requirements.
+
+3. **Configure Firewall Rules**
+
+   Update `config/firewall_rules.conf` with the appropriate firewall rules based on your network security policies.
 
 ## Usage
 
 ### Running the Security Audit
 
-To perform a security audit on your server, run the following command:
+The `security_audit.sh` script performs various security checks on the server. To execute it:
 
 ```bash
 bash scripts/security_audit.sh
 ```
 
-This script will:
-- List users and groups.
-- Check for users with UID 0 and weak passwords.
-- Scan for world-writable files, SUID/SGID bits, and other security risks.
-- Audit running services and firewall configurations.
-- Verify IP configurations and perform log monitoring.
+#### Commands Used:
 
-### Applying Server Hardening
+- **User and Group Audits**
+  ```bash
+  cut -d: -f1 /etc/passwd
+  cut -d: -f1 /etc/group
+  awk -F: '($3 == 0) {print}' /etc/passwd
+  awk -F: '($2 == "") {print $1}' /etc/shadow
+  ```
 
-To apply server hardening measures, run the following command:
+- **File and Directory Permissions**
+  ```bash
+  find / -type f -perm -o+w
+  find / -perm /6000 -type f
+  ```
+
+- **Service Audits**
+  ```bash
+  systemctl list-units --type=service --state=running
+  systemctl status sshd
+  systemctl status iptables
+  ```
+
+- **Firewall and Network Security**
+  ```bash
+  ufw status
+  netstat -tulpn | grep LISTEN
+  sysctl net.ipv4.ip_forward
+  sysctl net.ipv6.conf.all.forwarding
+  ```
+
+- **Security Updates and Patching**
+  ```bash
+  apt update
+  apt list --upgradable
+  ```
+
+- **Log Monitoring**
+  ```bash
+  grep "Failed password" /var/log/auth.log
+  ```
+
+### Applying Hardening Measures
+
+The `hardening.sh` script implements server hardening measures. Run it with:
 
 ```bash
 bash scripts/hardening.sh
 ```
 
-This script will:
-- Implement SSH hardening.
-- Disable IPv6 if not required.
-- Secure the GRUB bootloader.
-- Configure the firewall with recommended rules.
-- Enable automatic security updates.
+#### Commands Used:
+
+- **SSH Hardening**
+  ```bash
+  sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+  systemctl restart sshd
+  ```
+
+- **Disable IPv6**
+  ```bash
+  echo "net.ipv6.conf.all.disable_ipv6 = 1" >> /etc/sysctl.conf
+  echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /etc/sysctl.conf
+  sysctl -p
+  ```
+
+- **Secure the Bootloader**
+  ```bash
+  grub-mkpasswd-pbkdf2 | tee /etc/grub.d/40_custom <<EOF
+  set superusers="root"
+  password_pbkdf2 root <your_encrypted_password>
+  EOF
+  update-grub
+  ```
+
+- **Firewall Configuration**
+  ```bash
+  ufw default deny incoming
+  ufw default allow outgoing
+  ufw allow ssh
+  ufw enable
+  ```
+
+- **Enable Automatic Updates**
+  ```bash
+  apt install unattended-upgrades
+  dpkg-reconfigure --priority=low unattended-upgrades
+  ```
 
 ### Custom Security Checks
 
-To extend the script with custom security checks:
-1. Add your checks to the `scripts/custom_checks.sh` file.
-2. Define any necessary configuration in `config/custom_checks.conf`.
-
-### Reporting
-
-After running the scripts, the output will be displayed in the terminal. If you wish to generate a report file, you can redirect the output:
-
-```bash
-bash scripts/security_audit.sh > audit_report.txt
-bash scripts/hardening.sh > hardening_report.txt
-```
+The `custom_checks.sh` file allows for the inclusion of additional custom security checks. Modify it as needed and add your own checks.
 
 ## Execution on AWS EC2
 
 1. **Launch an EC2 Instance**
+
    - Go to the AWS Management Console.
-   - Navigate to the EC2 dashboard and click "Launch Instance."
+   - Navigate to the EC2 dashboard.
+   - Click on "Launch Instance."
    - Choose an Amazon Linux 2 or Ubuntu AMI.
    - Select an instance type (e.g., t2.micro for testing).
    - Configure security groups to allow SSH access.
    - Launch the instance and connect to it via SSH.
 
-2. **Clone the Repository**
+2. **Clone the Repository on EC2**
+
    ```bash
-   git clone https://github.com/yourusername/security-audit-hardening.git
+   git clone https://github.com/Ashishm96/security-audit-hardening.git
    cd security-audit-hardening
    ```
 
 3. **Run the Scripts**
-   - Perform a security audit:
+
+   - **Security Audit:**
      ```bash
      bash scripts/security_audit.sh
      ```
-   - Apply server hardening measures:
+
+   - **Server Hardening:**
      ```bash
      bash scripts/hardening.sh
      ```
 
-## Contribution
+4. **Review the Output**
 
-Contributions are welcome! If you find a bug or have an idea for an enhancement, feel free to submit an issue or a pull request.
+   The scripts will output results directly to the terminal. Review any warnings or recommendations for further action.
+
+## Reporting Issues
+
+If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or feedback, you can reach me at [Ashish Makasare](mailto:ashishmakasare24@gmail.com).
 
 ---
+
+Feel free to adjust the content as needed and make sure to replace placeholders with actual information relevant to your setup.
 
 ### Summary
 
